@@ -1,3 +1,5 @@
+import s from './PhoneBook.module.css';
+
 export const ContactForm = ({ name, number, handleChangeInput }) => {
   return (
     <div>
@@ -21,7 +23,9 @@ export const ContactForm = ({ name, number, handleChangeInput }) => {
           required
         />
       </label>
-      <button type="submit">Add contact</button>
+      <button className={s.add_contanct_button} type="submit">
+        Add contact
+      </button>
     </div>
   );
 };
