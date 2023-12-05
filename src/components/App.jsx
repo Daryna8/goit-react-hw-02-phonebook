@@ -1,6 +1,9 @@
 import React from 'react';
 import { nanoid } from 'nanoid';
 import { StyledForm } from './PhoneBook.styled';
+import { ContactForm } from './ContactForm';
+import { Filter } from './Filter';
+import { ContactList } from './ContactList';
 
 export class App extends React.Component {
   state = {
@@ -8,7 +11,7 @@ export class App extends React.Component {
       { id: '123', name: 'Daryna Shevchenko', number: '123-4334' },
       { id: '122', name: 'Ruslana Shevchenko', number: '123-432334' },
       { id: '121', name: 'John Doe', number: '123-433134' },
-      { id: '127', name: 'Johna Doe', number: '123-4331234' },
+      { id: '127', name: 'name', number: '123-4331234' },
     ],
     filter: '',
     name: '',
@@ -17,11 +20,12 @@ export class App extends React.Component {
 
   handleSubmit = e => {
     e.preventDefault();
-
-    const name = e.currentTarget.elements.name.value;
     const id = nanoid();
-    const number = e.currentTarget.elements.number.value;
-    const contact = { name, id, number };
+    const { name, number } = this.state;
+    if (this.state.contacts.map(contact => contact.name).includes(name)) {
+      alert(`${name} is already in contacts.`);
+    }
+    const contact = { id, name, number };
 
     this.setState(prevState => ({
       contacts: prevState.contacts.concat(contact),
@@ -45,6 +49,12 @@ export class App extends React.Component {
     );
   };
 
+  handleDeleteContact = id => {
+    this.setState(prevState => ({
+      contacts: prevState.contacts.filter(contact => contact.id !== id),
+    }));
+  };
+
   render() {
     const { filter, name, number } = this.state;
     const filteredContacts = this.getFilteredContacts();
@@ -61,47 +71,20 @@ export class App extends React.Component {
         }}
       >
         <StyledForm onSubmit={this.handleSubmit}>
-          <h2>Phonebook</h2>
-          <label htmlFor="">
-            Name
-            <input
-              value={name}
-              onChange={this.handleChangeInput}
-              type="text"
-              name="name"
-              required
-            />
-          </label>
-          <label htmlFor="">
-            Number
-            <input
-              value={number}
-              onChange={this.handleChangeInput}
-              type="tel"
-              name="number"
-              required
-            />
-          </label>
-          <button type="submit">Add contact</button>
+          <h1>Phonebook</h1>
+          <ContactForm
+            name={name}
+            number={number}
+            handleChangeInput={this.handleChangeInput}
+          />
         </StyledForm>
 
         <h2>Contacts</h2>
-        <label htmlFor="">
-          Find contacts by name
-          <input
-            value={filter}
-            onChange={this.handleChangeInput}
-            type="text"
-            name="filter"
-          />
-        </label>
-        <ul>
-          {filteredContacts.map(({ name, id, number }) => (
-            <li key={id}>
-              {name}: {number}
-            </li>
-          ))}
-        </ul>
+        <Filter filter={filter} handleChangeInput={this.handleChangeInput} />
+        <ContactList
+          filteredContacts={filteredContacts}
+          handleDeleteContact={this.handleDeleteContact}
+        />
       </div>
     );
   }
