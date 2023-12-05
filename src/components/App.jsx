@@ -24,6 +24,7 @@ export class App extends React.Component {
     const { name, number } = this.state;
     if (this.state.contacts.map(contact => contact.name).includes(name)) {
       alert(`${name} is already in contacts.`);
+      return;
     }
     const contact = { id, name, number };
 
