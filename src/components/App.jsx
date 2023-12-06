@@ -1,5 +1,4 @@
 import React from 'react';
-import { nanoid } from 'nanoid';
 import { ContactForm } from './ContactForm';
 import { Filter } from './Filter';
 import { ContactList } from './ContactList';
@@ -14,40 +13,26 @@ export class App extends React.Component {
       { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
     filter: '',
-    name: '',
-    number: '',
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    const id = nanoid();
-    const { name, number } = this.state;
-    if (this.state.contacts.map(contact => contact.name).includes(name)) {
-      alert(`${name} is already in contacts.`);
-      return;
-    }
-    const contact = { id, name, number };
-
-    this.setState(prevState => ({
-      contacts: prevState.contacts.concat(contact),
-    }));
-
-    this.setState({
-      name: '',
-      number: '',
-    });
-  };
-
-  handleChangeInput = e => {
-    const value = e.currentTarget.value;
-    const name = e.currentTarget.name;
-    this.setState({ [name]: value });
+  handleChangeFilter = e => {
+    this.setState({ filter: e.currentTarget.value });
   };
 
   getFilteredContacts = () => {
     return this.state.contacts.filter(contact =>
       contact.name.toLowerCase().includes(this.state.filter.toLowerCase())
     );
+  };
+
+  handleAddContact = newContact => {
+    if (this.state.contacts.map(c => c.name).includes(newContact.name)) {
+      alert(`${newContact.name} is already in contacts.`);
+      return;
+    }
+    this.setState(prevState => ({
+      contacts: prevState.contacts.concat(newContact),
+    }));
   };
 
   handleDeleteContact = id => {
@@ -57,33 +42,16 @@ export class App extends React.Component {
   };
 
   render() {
-    const { filter, name, number } = this.state;
+    const { filter } = this.state;
     const filteredContacts = this.getFilteredContacts();
     return (
-      <div
-        // style={{
-        //   height: '100vh',
-        //   display: 'flex',
-        //   justifyContent: 'center',
-        //   flexDirection: 'column',
-        //   alignItems: 'center',
-        //   fontSize: 40,
-        //   color: '#010101',
-        // }}
-        className={s.phonebook}
-      >
-        <form onSubmit={this.handleSubmit}>
-          <h1>Phonebook</h1>
-          <ContactForm
-            name={name}
-            number={number}
-            handleChangeInput={this.handleChangeInput}
-          />
-        </form>
+      <div className={s.phonebook}>
+        <h1>Phonebook</h1>
+        <ContactForm handleAddContact={this.handleAddContact} />
 
         <div className={s.contacts}>
           <h2>Contacts</h2>
-          <Filter filter={filter} handleChangeInput={this.handleChangeInput} />
+          <Filter filter={filter} handleChangeInput={this.handleChangeFilter} />
           <ContactList
             filteredContacts={filteredContacts}
             handleDeleteContact={this.handleDeleteContact}
